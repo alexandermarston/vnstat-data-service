@@ -6,9 +6,13 @@ module.exports = async (req, res, next) => {
     // Execute a command to get a JSON output from vnStat
     const interfaceData = execSync('/usr/bin/vnstat --json');
 
+    //Determine the JSON version
+    const jsonVersion = JSON.parse(interfaceData).jsonversion;
+
     // Parse the JSON blob into an array
     const parsedInterfaceData = JSON.parse(interfaceData);
 
+    // Parse request parameters
     const timePeriod = req.params.timeperiod;
     const selectedInterface = req.params.interface;
 
@@ -19,7 +23,7 @@ module.exports = async (req, res, next) => {
     for (i = 0; i < (parsedInterfaceData.interfaces).length; i++) {
         var interface = parsedInterfaceData.interfaces[i];
 
-        if (interface.id === selectedInterface) {
+        if (((jsonVersion == 1) ? interface.id : interface.name) === selectedInterface) {
             interfaceIndex = i;
             break;
         }
@@ -30,13 +34,16 @@ module.exports = async (req, res, next) => {
     } else {
         switch(timePeriod) {
             case 'hour':
-                res.json(parsedInterfaceData.interfaces[interfaceIndex].traffic.hours);
+                var hourlyData = ((jsonVersion == 1) ? parsedInterfaceData.interfaces[interfaceIndex].traffic.hours : parsedInterfaceData.interfaces[interfaceIndex].traffic.hour);
+                res.json(hourlyData);
                 break;
             case 'day':
-                res.json(parsedInterfaceData.interfaces[interfaceIndex].traffic.days);
+                var dailyData = ((jsonVersion == 1) ? parsedInterfaceData.interfaces[interfaceIndex].traffic.days : parsedInterfaceData.interfaces[interfaceIndex].traffic.day);
+                res.json(dailyData);
                 break;
             case 'month':
-                res.json(parsedInterfaceData.interfaces[interfaceIndex].traffic.months);
+                var monthlyData = ((jsonVersion == 1) ? parsedInterfaceData.interfaces[interfaceIndex].traffic.months : parsedInterfaceData.interfaces[interfaceIndex].traffic.month);
+                res.json(monthlyData);
                 break;
             default:
                 res.json(Boom.badRequest('Invalid time period supplied'));
