@@ -33,6 +33,10 @@ module.exports = async (req, res, next) => {
         res.json(Boom.badRequest('Interface supplied does not exist'));
     } else {
         switch(timePeriod) {
+            case 'fiveminute':
+                var fiveMinuteData = ((jsonVersion == 1) ? [] : parsedInterfaceData.interfaces[interfaceIndex].traffic.fiveminute);
+                res.json(fiveMinuteData);
+                break;
             case 'hour':
                 var hourlyData = ((jsonVersion == 1) ? parsedInterfaceData.interfaces[interfaceIndex].traffic.hours : parsedInterfaceData.interfaces[interfaceIndex].traffic.hour);
                 res.json(hourlyData);
@@ -44,6 +48,14 @@ module.exports = async (req, res, next) => {
             case 'month':
                 var monthlyData = ((jsonVersion == 1) ? parsedInterfaceData.interfaces[interfaceIndex].traffic.months : parsedInterfaceData.interfaces[interfaceIndex].traffic.month);
                 res.json(monthlyData);
+                break;
+            case 'year':
+                var yearlyData = ((jsonVersion == 1) ? [] : parsedInterfaceData.interfaces[interfaceIndex].traffic.year);
+                res.json(yearlyData);
+                break;
+            case 'top':
+                var topData = ((jsonVersion == 1) ? parsedInterfaceData.interfaces[interfaceIndex].traffic.tops : parsedInterfaceData.interfaces[interfaceIndex].traffic.top);
+                res.json(topData);
                 break;
             default:
                 res.json(Boom.badRequest('Invalid time period supplied'));
