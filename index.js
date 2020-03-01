@@ -5,7 +5,7 @@ const morgan = require('morgan');
 const mainRouter = require('./routes/main');
 
 // By default, set the HTTP port to 3000
-const port = 3000 | process.env.PORT
+const port = process.env.PORT || 3000
 
 // Initialise express
 const app = express()
